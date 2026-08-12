@@ -1,0 +1,10 @@
+{
+  "name": "shopify-giftcard-app",
+  "version": "0.1.0",
+  "description": "A Shopify app for creating customizable PDF gift cards.",
+  "private": true,
+  "packageManager": "npm@11.6.1",
+  "scripts": {
+    "shopify": "shopify"
+  }
+}
