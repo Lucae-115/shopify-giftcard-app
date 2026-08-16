@@ -40,12 +40,108 @@
 
     <h2>Create gift card</h2>
 
-    <p>The gift card form will be implemented here.</p>
+<form id="gift-card-form">
+
+    <p>
+        <label for="amount">Amount</label><br>
+        <input
+            id="amount"
+            type="number"
+            min="0.01"
+            step="0.01"
+            value="10.00"
+            required
+        >
+        EUR
+    </p>
+
+    <p>
+        <label for="expires_on">Expires on</label><br>
+        <input
+            id="expires_on"
+            type="date"
+        >
+    </p>
+
+    <p>
+        <label for="note">Internal note</label><br>
+        <input
+            id="note"
+            type="text"
+            maxlength="255"
+            placeholder="Optional"
+        >
+    </p>
+
+    <button type="submit">
+        Create gift card
+    </button>
+
+</form>
+
+<div id="gift-card-result" style="margin-top: 24px;"></div>
 
 </div>
 
 <script>
     const statusElement = document.getElementById('app-bridge-status');
+    const giftCardForm = document.getElementById('gift-card-form');
+    const giftCardResult = document.getElementById('gift-card-result');
+
+    giftCardForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    giftCardResult.textContent = 'Creating gift card...';
+
+    const payload = {
+        amount: document.getElementById('amount').value,
+        expires_on: document.getElementById('expires_on').value || null,
+        note: document.getElementById('note').value || null,
+    };
+
+    try {
+        const response = await fetch('/api/gift-cards', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            console.error(data);
+
+            giftCardResult.textContent =
+                'Gift card creation failed ❌';
+
+            return;
+        }
+
+        giftCardResult.innerHTML = '';
+
+        const heading = document.createElement('h3');
+        heading.textContent = 'Gift card created ✅';
+
+        const code = document.createElement('p');
+        code.textContent = `Code: ${data.code}`;
+
+        const id = document.createElement('p');
+        id.textContent = `Shopify ID: ${data.gift_card.id}`;
+
+        giftCardResult.appendChild(heading);
+        giftCardResult.appendChild(code);
+        giftCardResult.appendChild(id);
+
+    } catch (error) {
+        console.error(error);
+
+        giftCardResult.textContent =
+            'Gift card request failed ❌';
+    }
+});
 
     async function checkShopifyConnection() {
         if (typeof window.shopify === 'undefined') {

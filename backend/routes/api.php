@@ -4,6 +4,7 @@ use App\Http\Middleware\VerifyShopifySessionToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Services\ShopifyAdminService;
+use App\Http\Controllers\GiftCardController;
 
 Route::get('/session-check', function (Request $request) {
     $session = $request->attributes->get('shopify_session');
@@ -40,3 +41,6 @@ Route::get('/shop-check', function (
         'shopify' => $result['data']['shop'] ?? null,
     ]);
 })->middleware(VerifyShopifySessionToken::class);
+
+Route::post('/gift-cards', [GiftCardController::class, 'store'])
+    ->middleware(VerifyShopifySessionToken::class);
