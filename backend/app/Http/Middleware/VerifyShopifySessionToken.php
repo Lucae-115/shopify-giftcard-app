@@ -5,21 +5,21 @@ namespace App\Http\Middleware;
 use Closure;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 class VerifyShopifySessionToken
 {
+    private const RETRY_HEADER = 'X-Shopify-Retry-Invalid-Session-Request';
+
     public function handle(Request $request, Closure $next): Response
     {
         $token = $request->bearerToken();
 
         if (!$token) {
-            return response()->json([
-                'authenticated' => false,
-                'message' => 'Missing Shopify session token.',
-            ], 401);
+            return $this->invalidSessionResponse('Missing Shopify session token.');
         }
 
         try {
@@ -33,10 +33,7 @@ class VerifyShopifySessionToken
 
             // Token muss für genau unsere Shopify-App bestimmt sein.
             if (($payload->aud ?? null) !== $clientId) {
-                return response()->json([
-                    'authenticated' => false,
-                    'message' => 'Invalid token audience.',
-                ], 401);
+                return $this->invalidSessionResponse('Invalid token audience.');
             }
 
             $issuerHost = parse_url($payload->iss ?? '', PHP_URL_HOST);
@@ -48,10 +45,7 @@ class VerifyShopifySessionToken
                 !$destinationHost ||
                 $issuerHost !== $destinationHost
             ) {
-                return response()->json([
-                    'authenticated' => false,
-                    'message' => 'Invalid Shopify shop.',
-                ], 401);
+                return $this->invalidSessionResponse('Invalid Shopify shop.');
             }
 
             // Validierte Shopify-Daten für nachfolgende Controller/Middleware ablegen.
@@ -60,10 +54,17 @@ class VerifyShopifySessionToken
             return $next($request);
 
         } catch (Throwable $exception) {
-            return response()->json([
-                'authenticated' => false,
-                'message' => 'Invalid or expired Shopify session token.',
-            ], 401);
+            return $this->invalidSessionResponse(
+                'Invalid or expired Shopify session token.'
+            );
         }
+    }
+
+    private function invalidSessionResponse(string $message): JsonResponse
+    {
+        return response()->json([
+            'authenticated' => false,
+            'message' => $message,
+        ], 401)->header(self::RETRY_HEADER, '1');
     }
 }

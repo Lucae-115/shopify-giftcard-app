@@ -505,17 +505,6 @@
         message.className = `message ${type}`.trim();
     }
 
-    async function authHeaders(extra = {}) {
-        const headers = {...extra};
-
-        if (window.shopify?.idToken) {
-            const token = await window.shopify.idToken();
-            headers.Authorization = `Bearer ${token}`;
-        }
-
-        return headers;
-    }
-
     function formPayload(extra = {}) {
         return {
             amount: document.getElementById('amount').value,
@@ -537,11 +526,11 @@
     async function apiFetch(url, options = {}) {
         const response = await fetch(url, {
             ...options,
-            headers: await authHeaders({
+            headers: {
                 Accept: 'application/json',
                 ...(options.body ? {'Content-Type': 'application/json'} : {}),
                 ...(options.headers || {})
-            })
+            }
         });
 
         const contentType = response.headers.get('content-type') || '';
@@ -879,7 +868,9 @@
 
         try {
             const response = await fetch(latestPdfUrl, {
-                headers: await authHeaders({Accept: 'application/pdf'})
+                headers: {
+                    Accept: 'application/pdf'
+                }
             });
 
             if (!response.ok) {

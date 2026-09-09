@@ -12,7 +12,9 @@ Geprüft wird:
 - gleicher Shop in Issuer und Destination
 - Ablauf des JWT
 
-Session Tokens sind kurzlebig. Deshalb holt das Frontend für jeden API-Request und auch für den PDF-Download ein frisches Token über App Bridge. Das PDF wird nicht per normaler Browser-Navigation geladen, sondern per `fetch()` als Blob heruntergeladen.
+Session Tokens sind kurzlebig. Das ist normal. Wenn Laravel ein fehlendes, ungültiges oder abgelaufenes Token ablehnt, setzt die Middleware den Header `X-Shopify-Retry-Invalid-Session-Request: 1`. Dadurch kann App Bridge einen neuen Token holen und den Request wiederholen.
+
+Das Frontend ruft die eigenen API-Routen mit normalem `fetch('/api/...')` auf. App Bridge hängt den aktuellen ID Token an. Das PDF wird ebenfalls per `fetch()` geladen und danach als Blob heruntergeladen, nicht per normaler Browser-Navigation.
 
 Der Zugriff auf die Admin API passiert serverseitig über `ShopifyAdminService`.
 

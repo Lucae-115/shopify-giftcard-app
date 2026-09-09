@@ -106,7 +106,7 @@ Die Bildauswahl läuft über `shopify.intents.invoke('pick:shopify/File')`. Ausg
 - `.env` wird nicht committed.
 - Client Secret und Admin Access Token gehen nicht ins Frontend.
 - Geschützte Routen validieren das Shopify Session Token.
-- Für jeden API- und PDF-Request wird ein frischer Bearer Token geholt.
+- Ungültige oder abgelaufene Session Tokens bekommen den Shopify Retry-Header, damit App Bridge den Request mit neuem Token wiederholen kann.
 - `aud`, `iss` und `dest` werden geprüft.
 - Requests werden dem Shop aus dem Session Token zugeordnet.
 - Der vollständige Gutscheincode wird nicht im Klartext gespeichert.
