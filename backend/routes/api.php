@@ -1,10 +1,11 @@
 <?php
 
+use App\Http\Controllers\GiftCardController;
+use App\Http\Controllers\ShopifyFileController;
 use App\Http\Middleware\VerifyShopifySessionToken;
+use App\Services\ShopifyAdminService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Services\ShopifyAdminService;
-use App\Http\Controllers\GiftCardController;
 
 Route::get('/session-check', function (Request $request) {
     $session = $request->attributes->get('shopify_session');
@@ -42,5 +43,28 @@ Route::get('/shop-check', function (
     ]);
 })->middleware(VerifyShopifySessionToken::class);
 
-Route::post('/gift-cards', [GiftCardController::class, 'store'])
-    ->middleware(VerifyShopifySessionToken::class);
+Route::post('/shopify-files/resolve', [
+    ShopifyFileController::class,
+    'show',
+])->middleware(VerifyShopifySessionToken::class);
+
+Route::get('/gift-card-templates/default', [
+    GiftCardController::class,
+    'defaults',
+])->middleware(VerifyShopifySessionToken::class);
+
+Route::post('/gift-card-templates/preview', [
+    GiftCardController::class,
+    'preview',
+])->middleware(VerifyShopifySessionToken::class);
+
+Route::post('/gift-cards', [
+    GiftCardController::class,
+    'store',
+])->middleware(VerifyShopifySessionToken::class);
+
+Route::get('/gift-card-documents/{document}/pdf', [
+    GiftCardController::class,
+    'pdf',
+])->middleware(VerifyShopifySessionToken::class)
+    ->name('gift-card-documents.pdf');

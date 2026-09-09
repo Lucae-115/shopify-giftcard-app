@@ -38,6 +38,6 @@ return [
     'shopify' => [
         'client_id' => env('SHOPIFY_CLIENT_ID'),
         'client_secret' => env('SHOPIFY_CLIENT_SECRET'),
-        'api_version' => env('SHOPIFY_API_VERSION', '2026-07'),
+        'api_version' => env('SHOPIFY_API_VERSION', '2026-10'),
     ],
 ];

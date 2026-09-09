@@ -30,22 +30,22 @@ class ShopifyAdminService
     }
 
     public function graphql(string $shop, string $query, array $variables = []): array
-{
-    $token = $this->getAccessToken($shop);
-    $apiVersion = config('services.shopify.api_version');
+    {
+        $token = $this->getAccessToken($shop);
+        $apiVersion = config('services.shopify.api_version');
 
-    $response = Http::withHeaders([
-        'X-Shopify-Access-Token' => $token,
-    ])->post(
-        "https://{$shop}/admin/api/{$apiVersion}/graphql.json",
-        array_filter([
-            'query' => $query,
-            'variables' => empty($variables) ? null : $variables,
-        ], fn ($value) => $value !== null)
-    );
+        $response = Http::withHeaders([
+            'X-Shopify-Access-Token' => $token,
+        ])->post(
+            "https://{$shop}/admin/api/{$apiVersion}/graphql.json",
+            array_filter([
+                'query' => $query,
+                'variables' => empty($variables) ? null : $variables,
+            ], fn ($value) => $value !== null)
+        );
 
-    $response->throw();
+        $response->throw();
 
-    return $response->json();
-}
+        return $response->json();
+    }
 }

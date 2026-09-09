@@ -7,13 +7,12 @@ use Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
-    /**
-     * A basic test example.
-     */
-    public function test_the_application_returns_a_successful_response(): void
+    public function test_app_shell_renders(): void
     {
         $response = $this->get('/');
 
         $response->assertStatus(200);
+        $response->assertSee('PDF-Gutschein erstellen');
+        $response->assertSee('Bild aus Shopify auswaehlen');
     }
 }
