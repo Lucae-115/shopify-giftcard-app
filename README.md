@@ -1,30 +1,30 @@
 # Shopify Gift Card PDF App
 
-Ich habe die App gebaut, weil ich fuer manuell ausgegebene Shopify-Gutscheine nicht jedes Mal separat eine druckbare PDF-Datei zusammenbauen wollte. Die App erstellt den Gutschein direkt in Shopify und verwendet den vollstaendigen Code direkt danach fuer ein PDF.
+Ich habe die App gebaut, weil ich für manuell ausgegebene Shopify-Gutscheine nicht jedes Mal separat eine druckbare PDF-Datei zusammenbauen wollte. Die App erstellt den Gutschein direkt in Shopify und verwendet den vollständigen Code direkt danach für ein PDF.
 
-Der wichtige Punkt: Shopify gibt den kompletten Gutscheincode nur bei der Erstellung zurueck. Deshalb wird der Code lokal verschluesselt gespeichert, wenn das PDF spaeter noch einmal erzeugt werden soll.
+Der wichtige Punkt: Shopify gibt den kompletten Gutscheincode nur bei der Erstellung zurück. Deshalb wird der Code lokal verschlüsselt gespeichert, wenn das PDF später noch einmal erzeugt werden soll.
 
 ## Aktueller Stand
 
 - Eingebettete Shopify-App mit Laravel Backend
-- Session-Token-Pruefung fuer geschuetzte API-Routen
-- Gutschein-Erstellung ueber `giftCardCreate`
-- Betrag, Ablaufdatum und interne Notiz
-- Bildauswahl aus Shopify Dateien ueber App Bridge Intents
-- Aufloesung der `MediaImage`-Daten ueber Admin GraphQL
+- Session-Token-Prüfung für geschützte API-Routen
+- Gutschein-Erstellung über `giftCardCreate`
+- Betrag, Ablauf-Preset und interne Notiz
+- Bildauswahl aus Shopify Dateien über App Bridge Intents
+- Auflösung der `MediaImage`-Daten über Admin GraphQL
 - QR-Code-Erzeugung serverseitig
 - HTML/CSS-Template mit Platzhaltern
 - Vorschau in einem sandboxed iframe
-- PDF-Download nach der Erstellung
+- PDF-Download per authentifiziertem `fetch()` und Blob
 - lokale Speicherung der Dokumentdaten
-- verschluesselte Speicherung des vollstaendigen Gutscheincodes
+- verschlüsselte Speicherung des vollständigen Gutscheincodes
 
 ## Screenshots
 
 Screenshots liegen noch nicht im Repository. Geplant sind:
 
 - App-Start im Shopify Admin
-- ausgewaehltes Shopify-Bild
+- ausgewähltes Shopify-Bild
 - bearbeitetes Gutschein-Template
 - fertige Vorschau
 - heruntergeladenes PDF
@@ -33,12 +33,12 @@ Screenshots liegen noch nicht im Repository. Geplant sind:
 
 Der Ablauf ist bewusst direkt gehalten:
 
-1. Shopify Admin oeffnet die eingebettete App.
-2. App Bridge liefert Session Tokens fuer Backend-Requests.
+1. Shopify Admin öffnet die eingebettete App.
+2. App Bridge liefert für jeden Backend-Request ein frisches ID Token.
 3. Laravel validiert das JWT in `VerifyShopifySessionToken`.
 4. `GiftCardController` validiert die Eingaben.
 5. `ShopifyAdminService` erstellt den Gutschein per Admin GraphQL API.
-6. Der vollstaendige Code wird verschluesselt in `gift_card_documents` gespeichert.
+6. Der vollständige Code wird verschlüsselt in `gift_card_documents` gespeichert.
 7. `GiftCardTemplateService` rendert HTML/CSS mit Platzhaltern.
 8. `PdfService` erstellt daraus ein PDF.
 
@@ -61,9 +61,9 @@ Wichtige Dateien:
 - `firebase/php-jwt`
 - `endroid/qr-code`
 - `tecnickcom/tcpdf`
-- SQLite fuer lokale Entwicklung
+- SQLite für lokale Entwicklung
 
-`tecnickcom/tcpdf` wird fuer die PDF-Erzeugung genutzt. Die Library steht unter LGPL-3.0 und ist fuer diesen Einsatz als normale Composer-Dependency geeignet.
+`tecnickcom/tcpdf` wird für die PDF-Erzeugung genutzt. Die Library steht unter LGPL-3.0 und ist für diesen Einsatz als normale Composer-Dependency geeignet.
 
 ## Development Setup
 
@@ -76,7 +76,7 @@ php artisan migrate
 npm run build
 ```
 
-Fuer die lokale Entwicklung:
+Für die lokale Entwicklung:
 
 ```bash
 cd backend
@@ -91,41 +91,44 @@ npm run shopify -- app dev
 
 ## Shopify-Konfiguration
 
-Benotigte Scopes:
+Benötigte Scopes:
 
 - `read_gift_cards`
 - `write_gift_cards`
 - `read_files`
 
-Die App nutzt den Client-Credentials-Flow fuer den Dev Store. `SHOPIFY_CLIENT_SECRET` bleibt ausschliesslich im Backend.
+Die App nutzt den Client-Credentials-Flow für den Dev Store. `SHOPIFY_CLIENT_SECRET` bleibt ausschließlich im Backend.
 
-Die Bildauswahl laeuft ueber `shopify.intents.invoke('pick:shopify/File')`. Ausgewaehlt werden nur `MediaImage`-Dateien. Danach wird die File-ID serverseitig ueber GraphQL aufgeloest.
+Die Bildauswahl läuft über `shopify.intents.invoke('pick:shopify/File')`. Ausgewählt werden nur `MediaImage`-Dateien. Danach wird die File-ID serverseitig über GraphQL aufgelöst.
 
 ## Sicherheit
 
 - `.env` wird nicht committed.
 - Client Secret und Admin Access Token gehen nicht ins Frontend.
-- Geschuetzte Routen validieren das Shopify Session Token.
-- `aud`, `iss` und `dest` werden geprueft.
+- Geschützte Routen validieren das Shopify Session Token.
+- Für jeden API- und PDF-Request wird ein frischer Bearer Token geholt.
+- `aud`, `iss` und `dest` werden geprüft.
 - Requests werden dem Shop aus dem Session Token zugeordnet.
-- Der vollstaendige Gutscheincode wird nicht im Klartext gespeichert.
+- Der vollständige Gutscheincode wird nicht im Klartext gespeichert.
+- Die interne Notiz wird nicht im öffentlichen Gutschein gerendert.
 - Technische Fehler landen im Laravel Log, nicht als Stacktrace im Frontend.
-- Die Template-Vorschau laeuft in einem sandboxed iframe.
+- Die Template-Vorschau läuft in einem sandboxed iframe.
 
 ## Bekannte Grenzen
 
-- Die App erstellt neue Gutscheine. Bestehende Shopify-Gutscheine koennen nicht nachtraeglich mit komplettem Code ausgelesen werden.
-- Die PDF-Erzeugung deckt einfache HTML/CSS-Templates ab. Sehr modernes CSS ist bei TCPDF nur eingeschraenkt nutzbar.
+- Die App erstellt neue Gutscheine. Bestehende Shopify-Gutscheine können nicht nachträglich mit komplettem Code ausgelesen werden.
+- Die PDF-Erzeugung deckt einfache HTML/CSS-Templates ab. Sehr modernes CSS ist bei TCPDF nur eingeschränkt nutzbar.
 - Die Shopify-Gutschein-Detailseite hat noch keine eigene Admin Extension.
 - Ein echter End-to-End-Test muss im Shopify Admin geklickt werden, weil App Bridge, Session Token und File Picker dort laufen.
 
 ## Was ich technisch umgesetzt habe
 
-- Session-Token-Validierung fuer eine eingebettete Shopify-App
+- Session-Token-Validierung für eine eingebettete Shopify-App
 - Admin GraphQL Mutation `giftCardCreate`
 - serverseitige QR-Code-Erzeugung
-- Shopify File Picker ueber App Bridge Intents
+- Shopify File Picker über App Bridge Intents
+- Ablauf-Presets mit serverseitiger Berechnung
 - HTML/CSS-Template-System mit Platzhaltern
 - PDF-Erzeugung aus gerendertem HTML
-- verschluesselte Speicherung sensibler Gutscheincodes
-- einfache Tests fuer Template-Rendering und QR-Code-Service
+- verschlüsselte Speicherung sensibler Gutscheincodes
+- Tests für Template-Rendering, Validierung, Ablauf-Presets und PDF-Response

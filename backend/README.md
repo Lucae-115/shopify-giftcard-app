@@ -1,6 +1,6 @@
 # Backend
 
-Das Backend ist eine Laravel-App. Es uebernimmt die Arbeit, die nicht ins Frontend gehoert: Shopify API, Session-Token-Pruefung, QR-Code, Template-Rendering, PDF-Erzeugung und Speicherung der Dokumentdaten.
+Das Backend ist eine Laravel-App. Es übernimmt die Arbeit, die nicht ins Frontend gehört: Shopify API, Session-Token-Prüfung, QR-Code, Template-Rendering, PDF-Erzeugung und Speicherung der Dokumentdaten.
 
 ## Start
 
@@ -36,7 +36,7 @@ Alle API-Routen laufen durch `VerifyShopifySessionToken`.
 
 ## Datenbank
 
-Die Tabelle `gift_card_documents` speichert die Daten, die fuer ein PDF gebraucht werden. Der vollstaendige Gutscheincode wird ueber Laravels `encrypted` Cast gespeichert.
+Die Tabelle `gift_card_documents` speichert die Daten, die für ein PDF gebraucht werden. Der vollständige Gutscheincode wird über Laravels `encrypted` Cast gespeichert.
 
 Keine Access Tokens und keine Client Secrets werden in dieser Tabelle abgelegt.
 
@@ -44,6 +44,7 @@ Keine Access Tokens und keine Client Secrets werden in dieser Tabelle abgelegt.
 
 ```bash
 composer validate
+composer audit
 php artisan route:list
 php artisan test
 npm run build
