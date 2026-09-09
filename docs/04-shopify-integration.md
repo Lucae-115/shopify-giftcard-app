@@ -1,58 +1,49 @@
 # Shopify-Integration
 
-## Ziel
-
-Die Anwendung soll Gutscheine direkt über die Shopify Admin GraphQL API erstellen und den vollständigen Gutscheincode unmittelbar für die spätere PDF-Generierung verwenden.
-
 ## Authentifizierung
 
-Die Anwendung wird als eingebettete Shopify-App betrieben.
+Die App laeuft eingebettet im Shopify Admin. Frontend-Requests an `/api/*` muessen ein Shopify Session Token enthalten. Laravel validiert dieses Token in `VerifyShopifySessionToken`.
 
-Die Kommunikation zwischen Shopify Admin und Laravel erfolgt über Shopify App Bridge. Requests an geschützte Backend-Endpunkte enthalten ein kurzlebiges Shopify Session Token.
+Geprueft wird:
 
-Das Laravel-Backend validiert dieses JWT unter anderem anhand von:
+- Signatur mit `SHOPIFY_CLIENT_SECRET`
+- `aud` gegen `SHOPIFY_CLIENT_ID`
+- `iss` und `dest`
+- gleicher Shop in Issuer und Destination
+- Ablauf des JWT
 
-- Signatur
-- Client-ID
-- Ziel-Shop
-- Aussteller
-- Gültigkeitszeitraum
+Der Zugriff auf die Admin API passiert serverseitig ueber `ShopifyAdminService`.
 
-Für Zugriffe auf die Shopify Admin API verwendet das Backend einen serverseitigen Access Token.
+## Gutschein-Erstellung
 
-## Shopify Admin API
+Die App nutzt die GraphQL Mutation `giftCardCreate`.
 
-Die Kommunikation mit Shopify wurde in einem eigenen Service gekapselt:
+Dabei werden uebergeben:
 
-`App\Services\ShopifyAdminService`
+- Betrag
+- Waehrung `EUR`
+- optionales Ablaufdatum
+- optionale interne Notiz
 
-Der Service übernimmt:
+Shopify liefert in der Antwort den vollstaendigen Code zurueck. Dieser Code wird direkt fuer die PDF-Daten verwendet und lokal verschluesselt gespeichert.
 
-- Beschaffung und Zwischenspeicherung des Access Tokens
-- Aufbau von GraphQL-Anfragen
-- Kommunikation mit der Shopify Admin API
+## Shopify Dateien
 
-## Technischer Nachweis
+Das Frontend oeffnet den nativen Shopify File Picker ueber:
 
-Die Verbindung zur Shopify Admin GraphQL API wurde zunächst über eine einfache Shop-Abfrage geprüft.
+```js
+shopify.intents.invoke('pick:shopify/File', {
+    data: {
+        mediaTypes: ['MediaImage'],
+        multiSelect: false
+    }
+});
+```
 
-Anschließend wurde ein Testgutschein über die Mutation `giftCardCreate` erstellt.
+Nach der Auswahl wird nur die File-ID ans Backend geschickt. Das Backend fragt die Datei ueber GraphQL ab und akzeptiert sie nur, wenn sie ein `MediaImage` mit Status `READY` ist.
 
-Dabei konnte erfolgreich:
+## Grenzen
 
-- ein Gutschein in Shopify angelegt,
-- ein Gutscheinwert von 10,00 EUR gesetzt,
-- ein Ablaufdatum gesetzt,
-- eine interne Notiz gespeichert,
-- die Shopify-Gutschein-ID empfangen
-- und insbesondere der vollständige Gutscheincode empfangen werden.
+Shopify gibt den vollstaendigen Gutscheincode spaeter nicht erneut aus. Deshalb kann die App fuer selbst erstellte Gutscheine ein PDF erneut erzeugen, fuer alte Gutscheine ohne lokal gespeicherten Code aber nicht.
 
-Damit ist bestätigt, dass der Gutscheincode unmittelbar nach der Erstellung für die spätere PDF-Generierung verwendet werden kann.
-
-## Technische Entscheidung
-
-Bereits existierende Shopify-Gutscheine liefern über die Admin API nicht erneut ihren vollständigen Gutscheincode.
-
-Daher werden neue Gutscheine über die eigene Anwendung erstellt. Der dabei einmalig zurückgegebene vollständige Code wird anschließend für die Erstellung des druckbaren Gutscheins verarbeitet.
-
-Dieser Ansatz verwendet die offizielle Shopify API und vermeidet Workarounds zum nachträglichen Auslesen bestehender Gutscheincodes.
+Ich schreibe auch keinen Fake-Eintrag in Shopifys Aktivitaetsprotokoll. Wenn spaeter eine Admin Extension fuer Gift Cards sauber verfuegbar ist, kann dort ein eigener App-Block oder eine Aktion ergaenzt werden.

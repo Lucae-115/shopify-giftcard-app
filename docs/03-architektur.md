@@ -1,105 +1,63 @@
 # Architektur
 
-## Überblick
+Die App bleibt absichtlich klein. Die Logik steckt in wenigen Laravel-Klassen, damit der Ablauf im Bewerbungsgespraech erklaerbar bleibt.
 
-Die Anwendung wird als Shopify-App umgesetzt.
+## Ablauf
 
-Sie besteht aus mehreren klar getrennten Komponenten:
+```text
+Shopify Admin
+-> App Bridge
+-> Session Token
+-> Laravel Middleware
+-> GiftCardController
+-> ShopifyAdminService
+-> Shopify Admin GraphQL API
+-> giftCardCreate
+-> GiftCardDocument
+-> Template Rendering
+-> PDF Download
+```
 
-1. Shopify-Integration
-2. PHP-Backend
-3. Gutschein-Template
-4. QR-Code-Generierung
-5. PDF-Generierung
-6. Datenspeicherung
+## Backend-Klassen
 
-## Geplanter Ablauf
+`VerifyShopifySessionToken`
 
-Der Benutzer gibt die benötigten Gutscheindaten innerhalb der Anwendung ein.
+Validiert das JWT aus dem Shopify Admin. Es prueft Signatur, Audience, Issuer und Destination.
 
-Anschließend wird über die Shopify Admin API ein neuer Gutschein erstellt.
+`ShopifyAdminService`
 
-Shopify gibt bei der Erstellung einmalig den vollständigen Gutscheincode zurück. Dieser wird unmittelbar für die Generierung des PDF-Gutscheins verwendet.
+Kapselt den Client-Credentials-Flow und GraphQL-Requests an Shopify.
 
-Der vereinfachte Ablauf lautet:
+`ShopifyFileController`
 
-Benutzereingabe
-→ PHP-Backend
-→ Shopify Admin API
-→ Gutschein wird erstellt
-→ vollständiger Gutscheincode wird zurückgegeben
-→ HTML/CSS-Vorlage wird befüllt
-→ QR-Code wird erzeugt
-→ Vorschau wird erstellt
-→ PDF wird generiert
+Nimmt eine Shopify File-ID entgegen und loest sie als `MediaImage` auf. Nur fertige Bilder mit Status `READY` werden akzeptiert.
 
-## Shopify-Integration
+`GiftCardController`
 
-Die Kommunikation mit Shopify erfolgt über die Shopify Admin GraphQL API.
+Validiert Eingaben, erstellt den Shopify-Gutschein, speichert das Dokument und liefert Vorschau/PDF-URL zurueck.
 
-Die Anwendung soll insbesondere folgende Aufgaben übernehmen:
+`GiftCardTemplateService`
 
-- Gutschein erstellen
-- Gutscheinwert übergeben
-- Ablaufdatum übergeben
-- Gutscheincode bei der Erstellung verarbeiten
-- Shopify-Gutschein-ID speichern
+Stellt das Standardtemplate bereit und ersetzt Platzhalter.
 
-Später soll zusätzlich eine Integration direkt in die Gutscheinverwaltung von Shopify erfolgen.
+`PdfService`
 
-## Backend
+Erzeugt aus dem gerenderten HTML ein PDF.
 
-Die zentrale Geschäftslogik wird in PHP umgesetzt.
+`GiftCardDocument`
 
-Das Backend übernimmt unter anderem:
+Speichert die Daten fuer die erneute PDF-Erzeugung. Der Gutscheincode ist verschluesselt.
 
-- Validierung der Benutzereingaben
-- Kommunikation mit Shopify
-- Verarbeitung der Gutscheindaten
-- Verwaltung von Vorlagen
-- Verarbeitung hochgeladener Bilder
-- QR-Code-Generierung
-- PDF-Generierung
+## Template-Platzhalter
 
-## Template-System
+- `{{amount}}`
+- `{{currency}}`
+- `{{code}}`
+- `{{expires_on}}`
+- `{{note}}`
+- `{{qr_url}}`
+- `{{qr_code}}`
+- `{{image_url}}`
+- `{{image_alt}}`
 
-Der Gutschein basiert auf einer HTML/CSS-Vorlage.
-
-Platzhalter innerhalb der Vorlage werden durch konkrete Gutscheindaten ersetzt.
-
-Beispiele:
-
-- Gutscheinwert
-- Gutscheincode
-- Ablaufdatum
-- Motiv
-- QR-Code
-
-Dadurch kann die Gestaltung unabhängig von der eigentlichen Geschäftslogik angepasst werden.
-
-## Datenspeicherung
-
-Für bereits erstellte Gutscheine sollen relevante Daten lokal gespeichert werden.
-
-Dazu gehören beispielsweise:
-
-- Shopify-Gutschein-ID
-- Gutscheincode
-- verwendete Vorlage
-- verwendetes Motiv
-- QR-Code-Ziel
-- Erstellungsdatum
-
-Die genaue Datenbankstruktur wird in einem späteren Schritt festgelegt.
-
-## Erweiterbarkeit
-
-Die Architektur soll so aufgebaut werden, dass spätere Funktionen ergänzt werden können, ohne die bestehende Gutscheinlogik grundlegend verändern zu müssen.
-
-Mögliche Erweiterungen sind:
-
-- mehrere Templates
-- Template-Editor
-- Shopify Admin Extension
-- erneute PDF-Generierung
-- Verwaltung bestehender Gutscheine
+Platzhalterwerte werden escaped, bevor sie in die Vorlage eingesetzt werden. Die Vorschau wird nicht direkt in die App-Seite injiziert, sondern in einem sandboxed iframe angezeigt.

@@ -1,39 +1,18 @@
 # Problemstellung
 
-## Ausgangssituation
+Ich wollte einen einfachen Ablauf fuer individuelle Shopify-Gutscheine bauen.
 
-Bei der manuellen Erstellung von Gutscheinen in Shopify entsteht zusätzlicher Aufwand, wenn der Gutschein auch als druckbares PDF ausgegeben werden soll.
+Ohne App muss ich den Gutschein in Shopify erstellen, den Code kopieren, ein Motiv aussuchen, einen QR-Code erzeugen und alles in einer separaten PDF-Vorlage zusammensetzen. Das ist fuer einzelne Gutscheine machbar, wird aber schnell fehleranfaellig.
 
-Nach dem Erstellen eines Gutscheins müssen aktuell Daten wie:
+Das eigentliche Problem ist der Gutscheincode. Shopify gibt den vollstaendigen Code ueber die Admin API nur bei der Erstellung zurueck. Spaeter ist er nicht mehr vollstaendig abrufbar.
 
-- Gutscheincode
-- Gutscheinwert
-- Ablaufdatum
-- Motiv
-- QR-Code
+Die App loest deshalb genau diesen Ablauf:
 
-manuell in eine separate Gutscheinvorlage übertragen werden.
+1. Gutschein in Shopify erstellen.
+2. Vollstaendigen Code direkt verarbeiten.
+3. Bild aus Shopify Dateien verwenden.
+4. QR-Code erzeugen.
+5. HTML/CSS-Vorlage rendern.
+6. PDF herunterladen.
 
-Die PDF-Datei muss anschließend ebenfalls separat erstellt werden.
-
-## Problem
-
-Shopify bietet für diesen individuellen Anwendungsfall keine direkte Möglichkeit, aus einem administrativ erstellten Gutschein automatisch eine frei gestaltbare PDF-Datei zu generieren.
-
-Insbesondere bei wiederholter Erstellung von Gutscheinen führt der manuelle Prozess zu unnötigem Zeitaufwand und Fehlerpotenzial.
-
-## Ziel des Projekts
-
-Ziel ist die Entwicklung einer Shopify-App, die den gesamten Prozess zentralisiert.
-
-Die Anwendung soll:
-
-1. einen Gutschein über Shopify erstellen,
-2. die dafür benötigten Gutscheindaten verarbeiten,
-3. ein individuelles Motiv ermöglichen,
-4. einen QR-Code erzeugen,
-5. eine HTML/CSS-Vorlage mit den Gutscheindaten befüllen,
-6. eine Vorschau erzeugen,
-7. und das Ergebnis als PDF exportieren.
-
-Dadurch soll aus einem bislang teilweise manuellen Prozess ein reproduzierbarer und weitgehend automatisierter Workflow entstehen.
+Der Fokus liegt nicht auf einer grossen Gutscheinplattform, sondern auf einem nachvollziehbaren Workflow fuer individuell gestaltete PDF-Gutscheine.

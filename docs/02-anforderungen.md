@@ -1,47 +1,35 @@
 # Anforderungen
 
-## Muss-Anforderungen
+## Umgesetzt
 
-Die erste funktionsfähige Version der Anwendung soll folgende Funktionen enthalten:
+- Gutschein ueber Shopify `giftCardCreate` erstellen
+- Betrag eingeben
+- Ablaufdatum optional setzen
+- interne Notiz optional setzen
+- QR-Code-Ziel optional setzen
+- Bild aus Shopify Dateien auswaehlen
+- Shopify File-ID speichern
+- Bilddaten ueber Admin GraphQL aufloesen
+- Vorschau des Bildes anzeigen
+- HTML/CSS-Template bearbeiten
+- Platzhalter ersetzen
+- Vorschau in sandboxed iframe anzeigen
+- vollstaendigen Gutscheincode verwenden
+- Dokumentdaten lokal speichern
+- Gutscheincode verschluesselt speichern
+- PDF erzeugen und herunterladen
 
-- Erstellung eines Gutscheins über Shopify
-- Verarbeitung des vollständigen Gutscheincodes bei der Erstellung
-- Eingabe eines Gutscheinwerts
-- Eingabe eines Ablaufdatums
-- Auswahl eines vorhandenen Gutscheinmotivs
-- Upload eines eigenen Gutscheinmotivs
-- Eingabe einer Ziel-URL für einen QR-Code
-- Generierung eines QR-Codes
-- Befüllen einer HTML/CSS-Vorlage mit den Gutscheindaten
-- Vorschau des fertigen Gutscheins
-- Export des Gutscheins als PDF
+## Bewusst nicht umgesetzt
 
-## Soll-Anforderungen
+- normaler Datei-Upload per `<input type="file">`
+- Auslesen vollstaendiger Codes bestehender Shopify-Gutscheine
+- grosses WYSIWYG-System
+- Migration auf React
+- eigene Admin Extension fuer die Gutschein-Detailseite
 
-Nach Fertigstellung des MVP sollen folgende Funktionen ergänzt werden:
+## Naechste sinnvolle Schritte
 
-- Mehrere Gutscheinvorlagen
-- Erneute Generierung bereits erstellter Gutscheine
-- Speicherung der Zuordnung zwischen Shopify-Gutschein und PDF-Daten
-- Integration in die Shopify-Gutscheinverwaltung
-- Validierung der Benutzereingaben
-- Fehlerbehandlung für fehlgeschlagene Shopify-Anfragen
-
-## Kann-Anforderungen
-
-Optionale Erweiterungen:
-
-- HTML/CSS-Editor für eigene Vorlagen
-- Verwaltung einer Motiv-Galerie
-- Vorschau verschiedener Templates
-- Historie erzeugter PDFs
-- Unterstützung bereits vorhandener Shopify-Gutscheine
-- Konfigurierbare Standardwerte für QR-Code und Ablaufdatum
-
-## Abgrenzung
-
-Die erste Version ist keine allgemeine Gutscheinplattform.
-
-Der Fokus liegt auf einem klar definierten Workflow:
-
-Shopify-Gutschein erstellen → gestalten → Vorschau erzeugen → PDF exportieren.
+- Historie erzeugter Dokumente anzeigen
+- mehrere gespeicherte Templates verwalten
+- Standardwerte pro Shop speichern
+- Admin Extension pruefen, sobald ein passendes Gift-Card-Target sauber verfuegbar ist
