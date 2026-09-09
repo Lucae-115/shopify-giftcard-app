@@ -13,6 +13,6 @@ class ExampleTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('PDF-Gutschein erstellen');
-        $response->assertSee('Bild aus Shopify auswaehlen');
+        $response->assertSee('Bild aus Shopify auswählen');
     }
 }
