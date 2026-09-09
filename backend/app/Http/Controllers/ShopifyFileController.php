@@ -65,7 +65,7 @@ class ShopifyFileController extends Controller
         if (!$file || empty($file['image']) || ($file['fileStatus'] ?? null) !== 'READY') {
             return response()->json([
                 'success' => false,
-                'message' => 'Die ausgewaehlte Shopify-Datei ist kein fertiges Bild.',
+                'message' => 'Die ausgewählte Shopify-Datei ist kein fertiges Bild.',
             ], 422);
         }
 

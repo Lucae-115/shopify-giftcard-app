@@ -2,41 +2,29 @@
 
 namespace App\Services;
 
+use Illuminate\Support\HtmlString;
+
 class GiftCardTemplateService
 {
     public function defaultHtml(): string
     {
         return <<<'HTML'
 <main class="voucher">
-    <section class="voucher-media">
-        <img src="{{image_url}}" alt="{{image_alt}}">
-    </section>
+    {{image_section}}
 
     <section class="voucher-content">
         <p class="eyebrow">Shopify Gutschein</p>
         <h1>{{amount}} {{currency}}</h1>
-        <p class="subtitle">Einloesbar im Shop. Der Code ist nur fuer diese Karte bestimmt.</p>
+        <p class="subtitle">Einlösbar im Shop. Der Code ist nur für diese Karte bestimmt.</p>
 
         <div class="code-block">
             <span>Gutscheincode</span>
             <strong>{{code}}</strong>
         </div>
 
-        <dl class="details">
-            <div>
-                <dt>Ablaufdatum</dt>
-                <dd>{{expires_on}}</dd>
-            </div>
-            <div>
-                <dt>Notiz</dt>
-                <dd>{{note}}</dd>
-            </div>
-        </dl>
+        {{expires_section}}
 
-        <div class="qr-row">
-            <img src="{{qr_code}}" alt="QR-Code">
-            <p>{{qr_url}}</p>
-        </div>
+        {{qr_section}}
     </section>
 </main>
 HTML;
@@ -57,26 +45,26 @@ body {
 }
 
 .voucher {
-    width: 100%;
-    min-height: 720px;
+    width: 760px;
+    min-height: 660px;
     background: #ffffff;
     border: 1px solid #d2d5d8;
 }
 
 .voucher-media {
-    height: 255px;
+    height: 245px;
     background: #dfe3e8;
     overflow: hidden;
 }
 
 .voucher-media img {
     width: 100%;
-    height: 255px;
-    object-fit: cover;
+    height: auto;
+    display: block;
 }
 
 .voucher-content {
-    padding: 38px 46px;
+    padding: 34px 44px 38px;
 }
 
 .eyebrow {
@@ -95,7 +83,7 @@ h1 {
 }
 
 .subtitle {
-    margin: 12px 0 26px;
+    margin: 12px 0 24px;
     font-size: 16px;
     color: #5c5f62;
 }
@@ -103,7 +91,7 @@ h1 {
 .code-block {
     border: 2px solid #004c3f;
     padding: 18px 22px;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
 }
 
 .code-block span {
@@ -120,15 +108,13 @@ h1 {
 }
 
 .details {
-    display: table;
+    display: block;
     width: 100%;
-    margin: 0 0 24px;
+    margin: 0 0 20px;
 }
 
 .details div {
-    display: table-cell;
-    width: 50%;
-    padding-right: 20px;
+    display: block;
 }
 
 dt {
@@ -144,21 +130,36 @@ dd {
 .qr-row {
     display: table;
     width: 100%;
-    border-top: 1px solid #d2d5d8;
-    padding-top: 18px;
+    margin-top: 18px;
+    border: 1px solid #c9d8d3;
+    background: #f3faf7;
+    padding: 14px;
 }
 
 .qr-row img {
     display: table-cell;
-    width: 92px;
-    height: 92px;
+    width: 96px;
+    height: 96px;
+    vertical-align: middle;
+    background: #ffffff;
+    border: 1px solid #d2d5d8;
+}
+
+.qr-copy {
+    display: table-cell;
+    padding-left: 20px;
     vertical-align: middle;
 }
 
-.qr-row p {
-    display: table-cell;
-    padding-left: 18px;
-    vertical-align: middle;
+.qr-copy strong {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 18px;
+    color: #004c3f;
+}
+
+.qr-copy span {
+    display: block;
     font-size: 13px;
     color: #5c5f62;
     word-break: break-word;
@@ -171,7 +172,14 @@ CSS;
         $replacements = [];
 
         foreach ($data as $key => $value) {
-            $replacements['{{'.$key.'}}'] = e((string) ($value ?? ''));
+            $placeholder = '{{'.$key.'}}';
+
+            if ($value instanceof HtmlString) {
+                $replacements[$placeholder] = $value->toHtml();
+                continue;
+            }
+
+            $replacements[$placeholder] = e((string) ($value ?? ''));
         }
 
         return '<!doctype html><html><head><meta charset="utf-8"><style>'

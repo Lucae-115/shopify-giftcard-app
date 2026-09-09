@@ -20,9 +20,7 @@
             --focus: #458fff;
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
@@ -37,13 +35,7 @@
             padding: 24px;
         }
 
-        .topbar {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
+        .topbar { margin-bottom: 20px; }
 
         h1 {
             margin: 0 0 6px;
@@ -60,17 +52,6 @@
             line-height: 1.5;
         }
 
-        .status-pill {
-            min-width: 220px;
-            padding: 10px 12px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            background: var(--surface);
-            color: var(--muted);
-            font-size: 13px;
-            text-align: right;
-        }
-
         .layout {
             display: grid;
             grid-template-columns: minmax(340px, 430px) minmax(0, 1fr);
@@ -85,9 +66,7 @@
             padding: 18px;
         }
 
-        .panel + .panel {
-            margin-top: 16px;
-        }
+        .panel + .panel { margin-top: 16px; }
 
         .panel h2 {
             margin: 0 0 14px;
@@ -108,6 +87,7 @@
         }
 
         input,
+        select,
         textarea {
             width: 100%;
             border: 1px solid #aeb4b9;
@@ -128,11 +108,28 @@
         }
 
         input:focus,
+        select:focus,
         textarea:focus,
         button:focus {
             outline: 2px solid var(--focus);
             outline-offset: 1px;
         }
+
+        .field.has-error input,
+        .field.has-error select,
+        .field.has-error textarea {
+            border-color: var(--critical);
+            background: #fff7f5;
+        }
+
+        .field-error {
+            display: none;
+            color: var(--critical);
+            font-size: 12px;
+            line-height: 1.35;
+        }
+
+        .field.has-error .field-error { display: block; }
 
         .grid-2 {
             display: grid;
@@ -176,9 +173,7 @@
             color: #ffffff;
         }
 
-        .primary:hover {
-            background: var(--primary-strong);
-        }
+        .primary:hover { background: var(--primary-strong); }
 
         .secondary,
         .download-link {
@@ -198,38 +193,89 @@
             cursor: not-allowed;
         }
 
-        .image-preview {
+        .image-picker {
+            position: relative;
             display: grid;
-            grid-template-columns: 86px minmax(0, 1fr);
-            gap: 12px;
-            align-items: center;
-            min-height: 96px;
-            border: 1px dashed #babfc3;
+            place-items: center;
+            width: 100%;
+            min-height: 172px;
+            border: 1px dashed #9da3a8;
             border-radius: 8px;
-            padding: 10px;
+            padding: 14px;
             background: #fafbfb;
+            cursor: pointer;
+            overflow: hidden;
         }
 
-        .image-preview img {
-            width: 86px;
-            height: 72px;
+        .image-picker:hover {
+            border-color: var(--primary);
+            background: #f3faf7;
+        }
+
+        .image-picker img {
+            width: 100%;
+            height: 172px;
             object-fit: cover;
             border-radius: 6px;
+            display: block;
             background: #dfe3e8;
         }
 
-        .empty-thumb {
-            width: 86px;
-            height: 72px;
-            border-radius: 6px;
-            background: #dfe3e8;
-        }
-
-        .image-preview p {
-            margin: 0;
+        .empty-image {
+            display: grid;
+            gap: 8px;
+            justify-items: center;
             color: var(--muted);
-            font-size: 13px;
-            overflow-wrap: anywhere;
+            text-align: center;
+        }
+
+        .empty-image strong {
+            color: var(--text);
+            font-size: 14px;
+        }
+
+        .plus {
+            display: grid;
+            place-items: center;
+            width: 38px;
+            height: 38px;
+            border: 1px solid #babfc3;
+            border-radius: 999px;
+            background: #ffffff;
+            color: var(--primary);
+            font-size: 26px;
+            line-height: 1;
+        }
+
+        .remove-image {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            min-height: 30px;
+            height: 30px;
+            padding: 0;
+            border: 1px solid rgba(32, 34, 35, .18);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .92);
+            color: var(--text);
+            font-size: 20px;
+            line-height: 1;
+        }
+
+        .image-caption {
+            position: absolute;
+            left: 14px;
+            right: 14px;
+            bottom: 14px;
+            padding: 8px 10px;
+            border-radius: 6px;
+            background: rgba(0, 76, 63, .84);
+            color: #ffffff;
+            font-size: 12px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .message {
@@ -257,10 +303,11 @@
 
         .preview-frame {
             width: 100%;
-            min-height: 700px;
+            height: 720px;
             border: 1px solid var(--border);
             border-radius: 8px;
             background: #ffffff;
+            overflow: hidden;
         }
 
         .result-grid {
@@ -293,94 +340,81 @@
         }
 
         @media (max-width: 980px) {
-            .app-shell {
-                padding: 16px;
-            }
-
-            .topbar,
-            .layout {
-                display: block;
-            }
-
-            .status-pill {
-                margin-top: 14px;
-                text-align: left;
-            }
-
-            .right-column {
-                margin-top: 16px;
-            }
+            .app-shell { padding: 16px; }
+            .layout { display: block; }
+            .right-column { margin-top: 16px; }
         }
 
         @media (max-width: 620px) {
             .grid-2,
-            .result-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .preview-frame {
-                min-height: 520px;
-            }
+            .result-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 <main class="app-shell">
     <header class="topbar">
-        <div>
-            <h1>PDF-Gutschein erstellen</h1>
-            <p class="lead">
-                Die App erstellt einen echten Shopify-Gutschein, nimmt den einmalig ausgegebenen Code
-                und rendert daraus direkt ein druckbares PDF.
-            </p>
-        </div>
-        <div id="app-bridge-status" class="status-pill">Shopify-Verbindung wird geprueft...</div>
+        <h1>PDF-Gutschein erstellen</h1>
+        <p class="lead">
+            Die App erstellt einen echten Shopify-Gutschein, nimmt den einmalig ausgegebenen Code
+            und rendert daraus direkt ein druckbares PDF.
+        </p>
     </header>
 
     <div class="layout">
         <section class="left-column">
-            <form id="gift-card-form" class="panel">
+            <form id="gift-card-form" class="panel" novalidate>
                 <h2>Gutscheindaten</h2>
 
                 <div class="grid-2">
-                    <div class="field">
+                    <div class="field" data-field="amount">
                         <label for="amount">Betrag</label>
                         <input id="amount" type="number" min="0.01" step="0.01" value="25.00" required>
+                        <span class="field-error"></span>
                     </div>
 
                     <div class="field">
-                        <label for="currency">Waehrung</label>
+                        <label for="currency">Währung</label>
                         <input id="currency" type="text" value="EUR" maxlength="3" readonly>
                     </div>
                 </div>
 
-                <div class="field">
-                    <label for="expires_on">Ablaufdatum</label>
-                    <input id="expires_on" type="date">
-                    <p class="help">Leer lassen, wenn der Gutschein kein Ablaufdatum haben soll.</p>
+                <div class="field" data-field="expires_preset">
+                    <label for="expires_preset">Ablauf</label>
+                    <select id="expires_preset">
+                        <option value="none">Kein Ablaufdatum</option>
+                        <option value="1_year">1 Jahr</option>
+                        <option value="2_years">2 Jahre</option>
+                        <option value="3_years">3 Jahre</option>
+                        <option value="custom">Benutzerdefiniertes Datum</option>
+                    </select>
+                    <p id="expires-preview" class="help">Kein Ablaufdatum</p>
+                    <span class="field-error"></span>
                 </div>
 
-                <div class="field">
+                <div class="field" data-field="custom_expires_on" id="custom-expires-field" hidden>
+                    <label for="custom_expires_on">Benutzerdefiniertes Ablaufdatum</label>
+                    <input id="custom_expires_on" type="date">
+                    <span class="field-error"></span>
+                </div>
+
+                <div class="field" data-field="note">
                     <label for="note">Interne Notiz</label>
                     <input id="note" type="text" maxlength="255" placeholder="z.B. Weihnachtsaktion 2026">
+                    <p class="help">Wird nur intern bei Shopify gespeichert und erscheint nicht auf dem Gutschein.</p>
+                    <span class="field-error"></span>
                 </div>
 
-                <div class="field">
+                <div class="field" data-field="qr_url">
                     <label for="qr_url">QR-Code-Ziel</label>
                     <input id="qr_url" type="url" placeholder="https://dein-shop.myshopify.com">
+                    <span class="field-error"></span>
                 </div>
 
-                <div class="field">
+                <div class="field" data-field="image_url">
                     <label>Motiv aus Shopify Dateien</label>
-                    <div id="image-preview" class="image-preview">
-                        <div class="empty-thumb"></div>
-                        <p>Noch kein Bild ausgewaehlt.</p>
-                    </div>
-                    <div class="button-row">
-                        <button id="select-image-button" class="secondary" type="button">
-                            Bild aus Shopify auswaehlen
-                        </button>
-                    </div>
+                    <button id="image-picker" class="image-picker" type="button" aria-label="Bild aus Shopify auswählen"></button>
+                    <span class="field-error"></span>
                 </div>
 
                 <div class="button-row">
@@ -393,27 +427,32 @@
 
             <section class="panel">
                 <h2>Vorlage bearbeiten</h2>
-                <div class="field">
+                <div class="field" data-field="template_html">
                     <label for="template_html">HTML Template</label>
                     <textarea id="template_html" spellcheck="false"></textarea>
+                    <span class="field-error"></span>
                 </div>
 
-                <div class="field">
+                <div class="field" data-field="template_css">
                     <label for="template_css">CSS</label>
                     <textarea id="template_css" spellcheck="false"></textarea>
+                    <span class="field-error"></span>
                 </div>
 
-                <p class="help">Verfuegbare Platzhalter:</p>
+                <p class="help">Verfügbare Platzhalter:</p>
                 <div class="placeholder-list" aria-label="Template-Platzhalter">
                     <code>@{{amount}}</code>
                     <code>@{{currency}}</code>
                     <code>@{{code}}</code>
                     <code>@{{expires_on}}</code>
-                    <code>@{{note}}</code>
                     <code>@{{qr_url}}</code>
+                    <code>@{{display_qr_url}}</code>
                     <code>@{{qr_code}}</code>
                     <code>@{{image_url}}</code>
                     <code>@{{image_alt}}</code>
+                    <code>@{{image_section}}</code>
+                    <code>@{{expires_section}}</code>
+                    <code>@{{qr_section}}</code>
                 </div>
             </section>
         </section>
@@ -421,14 +460,14 @@
         <section class="right-column">
             <div class="panel">
                 <h2>Gutschein-Vorschau</h2>
-                <iframe id="voucher-preview" class="preview-frame" sandbox title="Gutschein-Vorschau"></iframe>
+                <iframe id="voucher-preview" class="preview-frame" sandbox="allow-scripts" title="Gutschein-Vorschau"></iframe>
             </div>
 
             <div id="result-panel" class="panel" hidden>
                 <h2>Ergebnis</h2>
                 <div class="result-grid">
                     <div>
-                        <p class="help">Vollstaendiger Shopify-Gutscheincode</p>
+                        <p class="help">Vollständiger Shopify-Gutscheincode</p>
                         <p id="created-code" class="code"></p>
                     </div>
                     <a id="download-pdf" class="download-link" href="#" download>PDF herunterladen</a>
@@ -439,23 +478,26 @@
 </main>
 
 <script>
-    const statusElement = document.getElementById('app-bridge-status');
     const form = document.getElementById('gift-card-form');
     const message = document.getElementById('form-message');
     const createButton = document.getElementById('create-button');
     const refreshPreviewButton = document.getElementById('refresh-preview-button');
-    const selectImageButton = document.getElementById('select-image-button');
-    const imagePreview = document.getElementById('image-preview');
+    const imagePicker = document.getElementById('image-picker');
     const previewFrame = document.getElementById('voucher-preview');
     const resultPanel = document.getElementById('result-panel');
     const createdCode = document.getElementById('created-code');
     const downloadPdf = document.getElementById('download-pdf');
     const templateHtml = document.getElementById('template_html');
     const templateCss = document.getElementById('template_css');
+    const expiresPreset = document.getElementById('expires_preset');
+    const customExpiresField = document.getElementById('custom-expires-field');
+    const customExpiresInput = document.getElementById('custom_expires_on');
+    const expiresPreview = document.getElementById('expires-preview');
 
     let selectedFile = null;
     let latestQrCode = '';
     let latestPdfUrl = '';
+    let previewResizeTimer = null;
 
     function setMessage(text, type = '') {
         message.hidden = !text;
@@ -463,11 +505,23 @@
         message.className = `message ${type}`.trim();
     }
 
+    async function authHeaders(extra = {}) {
+        const headers = {...extra};
+
+        if (window.shopify?.idToken) {
+            const token = await window.shopify.idToken();
+            headers.Authorization = `Bearer ${token}`;
+        }
+
+        return headers;
+    }
+
     function formPayload(extra = {}) {
         return {
             amount: document.getElementById('amount').value,
             currency: document.getElementById('currency').value,
-            expires_on: document.getElementById('expires_on').value || null,
+            expires_preset: expiresPreset.value,
+            custom_expires_on: customExpiresInput.value || null,
             note: document.getElementById('note').value || null,
             qr_url: document.getElementById('qr_url').value || null,
             qr_code: latestQrCode || null,
@@ -483,41 +537,154 @@
     async function apiFetch(url, options = {}) {
         const response = await fetch(url, {
             ...options,
-            headers: {
+            headers: await authHeaders({
                 Accept: 'application/json',
                 ...(options.body ? {'Content-Type': 'application/json'} : {}),
                 ...(options.headers || {})
-            }
+            })
         });
 
         const contentType = response.headers.get('content-type') || '';
+        const data = contentType.includes('application/json') ? await response.json() : null;
 
-        if (contentType.includes('application/json')) {
-            const data = await response.json();
-            return {response, data};
+        return {response, data};
+    }
+
+    function clearErrors() {
+        document.querySelectorAll('.field.has-error').forEach((field) => {
+            field.classList.remove('has-error');
+            const error = field.querySelector('.field-error');
+            if (error) {
+                error.textContent = '';
+            }
+        });
+    }
+
+    function showErrors(errors = {}) {
+        clearErrors();
+
+        Object.entries(errors).forEach(([fieldName, messages]) => {
+            const field = document.querySelector(`[data-field="${fieldName}"]`);
+            if (!field) {
+                return;
+            }
+
+            field.classList.add('has-error');
+            const error = field.querySelector('.field-error');
+            if (error) {
+                error.textContent = Array.isArray(messages) ? messages[0] : messages;
+            }
+        });
+    }
+
+    function extractError(data, fallback) {
+        if (data?.errors && !Array.isArray(data.errors)) {
+            showErrors(data.errors);
+            return null;
         }
 
-        return {response, data: null};
+        if (Array.isArray(data?.errors)) {
+            return data.errors.map((error) => error.message || error).join(' ');
+        }
+
+        return data?.message || fallback;
     }
+
+    function dateAfterYears(years) {
+        const date = new Date();
+        date.setFullYear(date.getFullYear() + years);
+        return date;
+    }
+
+    function formatDate(date) {
+        return date.toLocaleDateString('de-DE', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+    }
+
+    function updateExpiresUi() {
+        const value = expiresPreset.value;
+        customExpiresField.hidden = value !== 'custom';
+
+        if (value === 'none') {
+            expiresPreview.textContent = 'Kein Ablaufdatum';
+            customExpiresInput.value = '';
+            return;
+        }
+
+        const presetYears = {
+            '1_year': 1,
+            '2_years': 2,
+            '3_years': 3
+        }[value];
+
+        if (presetYears) {
+            expiresPreview.textContent = `Gültig bis ${formatDate(dateAfterYears(presetYears))}`;
+            customExpiresInput.value = '';
+            return;
+        }
+
+        expiresPreview.textContent = customExpiresInput.value
+            ? `Gültig bis ${formatDate(new Date(`${customExpiresInput.value}T00:00:00`))}`
+            : 'Bitte ein Ablaufdatum auswählen.';
+    }
+
+    function setPreviewHtml(html) {
+        const resizeScript = `
+            <script>
+                function fitVoucherPreview() {
+                    const voucher = document.querySelector('.voucher') || document.body.firstElementChild || document.body;
+                    document.documentElement.style.overflow = 'hidden';
+                    document.body.style.overflow = 'hidden';
+                    document.body.style.margin = '0';
+                    document.body.style.transformOrigin = 'top left';
+                    const width = voucher.offsetWidth || document.body.scrollWidth || 760;
+                    const height = voucher.offsetHeight || document.body.scrollHeight || 700;
+                    const scale = Math.min(1, Math.max(0.2, (window.innerWidth - 2) / width));
+                    document.body.style.transform = 'scale(' + scale + ')';
+                    window.parent.postMessage({
+                        type: 'voucher-preview-size',
+                        height: Math.ceil(height * scale) + 4
+                    }, '*');
+                }
+                window.addEventListener('load', fitVoucherPreview);
+                window.addEventListener('resize', fitVoucherPreview);
+                setTimeout(fitVoucherPreview, 50);
+            <\/script>
+        `;
+
+        previewFrame.srcdoc = html.includes('</body>')
+            ? html.replace('</body>', `${resizeScript}</body>`)
+            : `${html}${resizeScript}`;
+    }
+
+    window.addEventListener('message', (event) => {
+        if (event.data?.type !== 'voucher-preview-size') {
+            return;
+        }
+
+        clearTimeout(previewResizeTimer);
+        previewResizeTimer = setTimeout(() => {
+            previewFrame.style.height = `${Math.max(420, event.data.height)}px`;
+        }, 20);
+    });
 
     async function checkShopifyConnection() {
         if (typeof window.shopify === 'undefined') {
-            statusElement.textContent = 'App Bridge nicht geladen';
+            setMessage('App Bridge wurde nicht geladen. Bitte die App im Shopify Admin öffnen.', 'error');
             return;
         }
 
         try {
             const {response, data} = await apiFetch('/api/shop-check');
-
-            if (response.ok && data?.shopify) {
-                statusElement.textContent = `${data.shopify.name} verbunden`;
-                return;
+            if (!response.ok || !data?.shopify) {
+                setMessage(data?.message || 'Die Shopify-Verbindung konnte nicht geprüft werden.', 'error');
             }
-
-            statusElement.textContent = data?.message || 'Shopify-Verbindung fehlgeschlagen';
         } catch (error) {
             console.error(error);
-            statusElement.textContent = 'Shopify-Verbindung fehlgeschlagen';
+            setMessage('Die Shopify-Verbindung konnte nicht geprüft werden.', 'error');
         }
     }
 
@@ -533,6 +700,7 @@
     }
 
     async function refreshPreview() {
+        clearErrors();
         const {response, data} = await apiFetch('/api/gift-card-templates/preview', {
             method: 'POST',
             body: JSON.stringify(formPayload({
@@ -541,43 +709,55 @@
         });
 
         if (!response.ok || !data?.success) {
-            throw new Error(data?.message || 'Vorschau konnte nicht erzeugt werden.');
+            const validation = extractError(data, 'Vorschau konnte nicht erzeugt werden.');
+            if (validation) {
+                throw new Error(validation);
+            }
+            return;
         }
 
-        previewFrame.srcdoc = data.preview_html;
+        latestQrCode = data.qr_code || '';
+        setPreviewHtml(data.preview_html);
     }
 
-    async function resolveSelectedFile(fileId) {
-        const {response, data} = await apiFetch('/api/shopify-files/resolve', {
-            method: 'POST',
-            body: JSON.stringify({file_id: fileId})
-        });
+    function renderImagePicker() {
+        imagePicker.textContent = '';
 
-        if (!response.ok || !data?.success) {
-            throw new Error(data?.message || 'Shopify-Bild konnte nicht gelesen werden.');
+        if (!selectedFile) {
+            const empty = document.createElement('span');
+            empty.className = 'empty-image';
+            empty.innerHTML = '<span class="plus">+</span><strong>Bild aus Shopify auswählen</strong><span>Vorhandenes Bild aus Inhalte / Dateien verwenden</span>';
+            imagePicker.appendChild(empty);
+            return;
         }
-
-        selectedFile = data.file;
-        imagePreview.textContent = '';
 
         const image = document.createElement('img');
         image.src = selectedFile.url;
         image.alt = '';
+        imagePicker.appendChild(image);
 
-        const copy = document.createElement('p');
-        const title = document.createElement('strong');
-        title.textContent = selectedFile.alt || 'Shopify-Bild';
-        copy.appendChild(title);
-        copy.appendChild(document.createElement('br'));
-        copy.appendChild(document.createTextNode(selectedFile.id));
+        if (selectedFile.alt) {
+            const caption = document.createElement('span');
+            caption.className = 'image-caption';
+            caption.textContent = selectedFile.alt;
+            imagePicker.appendChild(caption);
+        }
 
-        imagePreview.appendChild(image);
-        imagePreview.appendChild(copy);
-
-        await refreshPreview();
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'remove-image';
+        remove.setAttribute('aria-label', 'Bild entfernen');
+        remove.textContent = '×';
+        remove.addEventListener('click', async (event) => {
+            event.stopPropagation();
+            selectedFile = null;
+            renderImagePicker();
+            await refreshPreview();
+        });
+        imagePicker.appendChild(remove);
     }
 
-    selectImageButton.addEventListener('click', async () => {
+    async function openFilePicker() {
         setMessage('');
 
         try {
@@ -595,15 +775,28 @@
             }
 
             if (result.code !== 'ok' || !result.data?.ids?.length) {
-                throw new Error(result.message || 'Es wurde kein Bild ausgewaehlt.');
+                throw new Error(result.message || 'Es wurde kein Bild ausgewählt.');
             }
 
-            await resolveSelectedFile(result.data.ids[0]);
+            const {response, data} = await apiFetch('/api/shopify-files/resolve', {
+                method: 'POST',
+                body: JSON.stringify({file_id: result.data.ids[0]})
+            });
+
+            if (!response.ok || !data?.success) {
+                throw new Error(data?.message || 'Shopify-Bild konnte nicht gelesen werden.');
+            }
+
+            selectedFile = data.file;
+            renderImagePicker();
+            await refreshPreview();
         } catch (error) {
             console.error(error);
-            setMessage(error.message || 'Die Shopify-Dateiauswahl konnte nicht geoeffnet werden.', 'error');
+            setMessage(error.message || 'Die Shopify-Dateiauswahl konnte nicht geöffnet werden.', 'error');
         }
-    });
+    }
+
+    imagePicker.addEventListener('click', openFilePicker);
 
     refreshPreviewButton.addEventListener('click', async () => {
         setMessage('');
@@ -619,9 +812,28 @@
         }
     });
 
+    [expiresPreset, customExpiresInput].forEach((input) => {
+        input.addEventListener('change', async () => {
+            updateExpiresUi();
+            try {
+                await refreshPreview();
+            } catch (error) {
+                console.error(error);
+            }
+        });
+    });
+
+    ['amount', 'qr_url', 'template_html', 'template_css'].forEach((id) => {
+        document.getElementById(id).addEventListener('input', () => {
+            const field = document.querySelector(`[data-field="${id}"]`);
+            field?.classList.remove('has-error');
+        });
+    });
+
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
         setMessage('');
+        clearErrors();
         createButton.disabled = true;
         createButton.textContent = 'Wird erstellt...';
 
@@ -632,15 +844,15 @@
             });
 
             if (!response.ok || !data?.success) {
-                const validation = data?.errors
-                    ? Object.values(data.errors).flat().join(' ')
-                    : data?.message;
-
-                throw new Error(validation || 'Der Gutschein konnte nicht erstellt werden.');
+                const validation = extractError(data, 'Der Gutschein konnte nicht erstellt werden.');
+                if (validation) {
+                    throw new Error(validation);
+                }
+                return;
             }
 
             latestQrCode = data.qr_code || '';
-            previewFrame.srcdoc = data.preview_html;
+            setPreviewHtml(data.preview_html);
             createdCode.textContent = data.code;
             downloadPdf.href = data.pdf_url;
             latestPdfUrl = data.pdf_url;
@@ -667,12 +879,15 @@
 
         try {
             const response = await fetch(latestPdfUrl, {
-                headers: {
-                    Accept: 'application/pdf'
-                }
+                headers: await authHeaders({Accept: 'application/pdf'})
             });
 
             if (!response.ok) {
+                const contentType = response.headers.get('content-type') || '';
+                if (contentType.includes('application/json')) {
+                    const data = await response.json();
+                    throw new Error(data.message || 'Das PDF konnte nicht heruntergeladen werden.');
+                }
                 throw new Error('Das PDF konnte nicht heruntergeladen werden.');
             }
 
@@ -680,7 +895,7 @@
             const url = URL.createObjectURL(blob);
             const temporaryLink = document.createElement('a');
             temporaryLink.href = url;
-            temporaryLink.download = `gift-card-${Date.now()}.pdf`;
+            temporaryLink.download = `gutschein-${Date.now()}.pdf`;
             document.body.appendChild(temporaryLink);
             temporaryLink.click();
             temporaryLink.remove();
@@ -694,12 +909,15 @@
     });
 
     async function boot() {
+        renderImagePicker();
+        updateExpiresUi();
+
         try {
             await loadTemplateDefaults();
             await refreshPreview();
         } catch (error) {
             console.error(error);
-            setMessage(error.message || 'Die App konnte nicht vollstaendig geladen werden.', 'error');
+            setMessage(error.message || 'Die App konnte nicht vollständig geladen werden.', 'error');
         }
 
         checkShopifyConnection();
